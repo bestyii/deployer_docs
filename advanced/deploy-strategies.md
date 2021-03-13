@@ -1,6 +1,6 @@
-# Deploy strategies
+# 部署策略 (Deploy strategies)
 
-### Single server
+### 独立主机
 
 In most cases you don't need more than one production server.
 It's better to build your release files (as cache, js/css bundles) on that machine as well. 

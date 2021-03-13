@@ -1,4 +1,4 @@
-# Servers
+# 服务器 (Servers)
 
-Servers was renamed to [hosts](hosts.md) in Deployer 5.x.  
-If you are looking for documentation to Deployer 4.x follow [this link](https://github.com/deployphp/docs/tree/4.x).
+在 Deployer 5.x 以后 '服务器' 重命名为 [主机](hosts.md)   
+如果想阅读相关Deployer 4.x 文档  [点击此处](https://github.com/deployphp/docs/tree/4.x).

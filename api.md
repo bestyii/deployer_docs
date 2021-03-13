@@ -1,28 +1,28 @@
-# API Reference
+# API 参考资料
 
 ### host
 
 * `host(string ...$hostname): Host`
 
-Define a host or group of hosts. Read more at [hosts](hosts.md).
+声明一个主机或一组主机. 了解更多请移步 [主机](hosts.md).
 
 ### localhost
 
 * `localhost(string ...$alias = 'localhost'): Host`
 
-Define a localhost.
+声明本地主机.
 
 ### inventory
 
 * `inventory(string $file): Host[]`
 
-Load a list of hosts from a file.
+载入主机清单文件
 
 ### desc
 
 * `desc(string $description)`
 
-Set a task description.
+设置任务描述.
 
 ### task
 
@@ -30,44 +30,44 @@ Set a task description.
 * `task(string $name, callable $callable)`
 * `task(string $name): Task`
 
-Define a task or get a task. More at [tasks](tasks.md).
+声明一个任务或获取一个任务. 了解更多请移步 [任务](tasks.md).
 
 ### before
 
 * `before(string $when, string $that)`
 
-Call before `$when` task, `$that` task.
+在任务 `$when` 之前, 执行任务 `$that`.
 
 ### after
 
 * `after(string $when, string $that)`
 
-Call after `$when` task, `$that` task.
+在任务 `$when` 之后, 执行任务`$that`.
 
 ### fail
 
 * `fail(string $what, string $that)`
 
-If task `$what` fails, run `$that` task.
+如果任务 `$what` 执行失败, 执行任务 `$that`.
 
 ### argument
 
 * `argument($name, $mode = null, $description = '', $default = null)`
 
-Add user's cli arguments.
+添加用户的cli参数.
 
 ### option
 
 * `option($name, $shortcut=null, $mode=null, $description='', $default=null)`
 
-Add user's cli options.
+添加用户的cli选项.
 
 ### cd
 
 * `cd(string $path)`
 
-Sets the working path for the following `run` functions. 
-Every task restores the working path to the base working path at the beginning of the task.
+设置`run`函数下的工作路径.
+每个任务都会将工作路径恢复到任务开始时的基本工作路径. 
 
 ~~~php
 cd('{{release_path}}');
@@ -78,7 +78,7 @@ run('npm run build');
 
 * `within(string $path, callable $callback)`
 
-Run `$callback` within `$path`.
+在指定的路径 `$path`内部运行回调函数`$callback`.
 
 ~~~php
 within('{{release_path}}', function () {
@@ -90,7 +90,8 @@ within('{{release_path}}', function () {
 
 * `workingPath(): string`
 
-Return the current working path.
+返回当前工作路径. 
+
 
 ~~~php
 cd('{{release_path}}');
@@ -101,20 +102,20 @@ workingPath() == '/var/www/app/releases/1';
 
 * `run(string $command, $options = []): string`
 
-Run a command on remote host. Available options:
+在远程主机上运行命令. 可用选项:
 
-* `timeout` — Sets the process timeout (max. runtime).  
-  To disable the timeout, set this value to null.  
-  The timeout in seconds (default: 300 sec)
-* `tty` — Enables or disables the TTY mode (default: false)
+* `timeout` — 设置进程超时 (最大运行时间) .
+  要禁用超时, 请将此值设置为`null`.  
+  超时时间(秒) 默认值:300秒
+* `tty` — 启用或禁用TTY模式 默认值:false
 
-For example, if your private key contains a passphrase, enable tty and you'll see git prompt for a password. 
+例如, 如果您的私钥包含密码短语, 启用tty, 您将看到git提示输入密码. 
 
 ~~~php
 run('git clone ...', ['timeout' => null, 'tty' => true]);
 ~~~
 
-`run` function returns the output of the command as a string:
+`run`函数以字符串形式返回输出的命令:
    
 ~~~php
 $path = run('readlink {{deploy_path}}/current');
@@ -125,16 +126,16 @@ run("echo $path");
 
 * `runLocally($command, $options = []): string`
 
-Run a command on localhost. Available options:
+在localhost上运行命令. 可用选项:
 
-* `timeout` — The timeout in seconds (default: 300 sec)
-* `tty` — The TTY mode (default: false)
+* `timeout` — 超时时间(秒) 默认值:300秒
+* `tty` — TTY模式 默认值:false
 
 ### test
 
 * `test(string $command): bool`
 
-Run a test command.
+运行测试命令.
  
 ~~~php
 if (test('[ -d {{release_path}} ]')) {
@@ -146,14 +147,14 @@ if (test('[ -d {{release_path}} ]')) {
 
 * `testLocally(string $command): bool`
 
-Run a test command locally.
+在本地运行测试命令.
 
 ### on
 
 * `on(Host $host, callable $callback)`
 * `on(Host[] $host, callable $callback)`
 
-Execute a `$callback` on the specified hosts.
+在指定的主机上运行函数 `$callback` .
 
 ~~~php
 on(host('domain.com'), function ($host) {
@@ -177,13 +178,13 @@ on(Deployer::get()->hosts, function ($host) {
 
 * `roles(string ...$role): Host[]`
 
-Return a list of hosts by roles.
+按角色返回主机列表.
 
 ### invoke
 
 * `invoke(string $task)`
 
-Run a task on the current host. 
+在当前主机上运行任务. 
 
 ~~~php
 task('deploy', function () {
@@ -193,150 +194,151 @@ task('deploy', function () {
 });
 ~~~
 
-> **Note** this is experimental functionality.
+> **注意** 这个是实验功能.
 
 ### upload
 
 * `upload(string $source, string $destination, $config = [])`
 
-Upload files from `$source` to `$destination` on the remote host.
+从 `$source` 上传文件到远程主机 `$destination` .
 
 ~~~php
 upload('build/', '{{release_path}}/public');
 ~~~
 
-> You may have noticed that there is a trailing slash (/) at the end of the first argument in the above command, 
-> this is necessary to mean "the contents of `build`".
+> 您可能已经注意到, 在上述命令的第一个参数的末尾有一个斜杠（/）, 
+> 意思就是 "`build`下的内容".
 >
-> The alternative, without the trailing slash, would place `build`, including the directory, within `public`. 
-> This would create a hierarchy that looks like: `{{release_path}}/public/build`
+> 另一种方法是不使用斜杠, 将 `build`这个目录直接放到 `public`中. 
+> 他的创建的层级, 是这个样子: `{{release_path}}/public/build`
 
-Available options:
+可用选项:
 
-* `timeout` — The timeout in seconds (default: null)
-* `options` — `rsync` options.
+* `timeout` — 超时时间 默认值: null
+* `options` — `rsync` 选项.
 
 ### download
 
 * `download(string $source, string $destination, $config = [])`
 
-Download files from the remote host `$source` to `$destination` on the local machine.
+从远程主机 `$source` 下载文件到本地主机 `$destination` 中.
 
-Available options:
+可用选项:
 
-* `timeout` — The timeout in seconds (default: null)
-* `options` — `rsync` options.
+* `timeout` — 超时时间 默认值: null
+* `options` — `rsync` 选项.
 
 ### write
 
-Write a message in the output. 
-You can format the message with the tags `<info>...</info>`, `<comment></comment>` or `<error></error>` (see [Symfony Console](http://symfony.com/doc/current/console/coloring.html)).
+在输出中写入消息.
+您可以使用标记格式化消息 `<info>...</info>`, `<comment></comment>` or `<error></error>` (参考 [Symfony Console](http://symfony.com/doc/current/console/coloring.html)).
 
 ### writeln
 
-Same as the `write` function, but also writes a new line.
+与 `write`函数相同, 但会另起一行. 
 
 ### set
 
 * `set(string $name, string|int|bool|array $value)`
 * `set(string $name, callable $value)`
 
-Setup a global configuration parameter. If callable is passed as `$value` it will be triggered on the first get of this config.
+设置全局配置参数. 如果callable作为`$value`传递, 它将在第一次获取此配置时触发. 
 
-More at [configuration](configuration.md).
+了解更多请移步 [配置](configuration.md).
 
 ### add
 
 * `add(string $name, array $values)`
 
-Add values to already existing config. 
+向现有配置添加值. 
 
-More at [configuration](configuration.md).
+了解更多请移步 [配置](configuration.md).
 
 ### get
 
 * `get(string $name, $default = null): string|int|bool|array`
 
-Get a configuration value.
+获取配置值.
 
-More at [configuration](configuration.md).
+了解更多请移步 [配置](configuration.md).
 
 ### has
 
 * `has(string $name): bool`
 
-Check if a config option exists.
+检查配置项是否存在. 
 
-More at [configuration](configuration.md).
+
+了解更多请移步 [配置](configuration.md).
 
 ### ask
 
 * `ask(string $message, $default = null, $suggestedChoices = null)`
 
-Ask the user for input.
+请求用户输入. 
+
 
 ### askChoice
 
 * `askChoice(string $message, array $availableChoices, $default = null, $multiselect = false)`
 
-Ask the user to select from multiple key/value options and return an array. 
-Multiselect enables selection of multiple comma separated choices. 
-The default value will be used in quiet mode, otherwise the first available choice will be accepted.
+要求用户从多个键/值选项中选择并返回一个数组. 
+启用多选时, 结果使用逗号隔开选中的内容.
+默认值将在静默模式下使用, 否则将接受第一个可用选项. 
 
 ### askConfirmation
 
 * `askConfirmation(string $message, bool $default = false)`
 
-Ask the user a yes or no question.
+询问用户 “是” 或 “否” 的问题 .
 
 ### askHiddenResponse
 
 * `askHiddenResponse(string $message)`
 
-Ask the user for a password.
+询问用户密码.
 
 ### input
 
 * `input(): Input`
 
-Get the current console input.
+获取当前控制台输入.
 
 ### output
 
 * `output(): Output`
 
-Get the current console output.
+获取当前控制台输出.
 
 ### isQuiet
 
 * `isQuiet(): bool`
 
-Check if th `dep` command was started with the `-q` option.
+检查 `dep` 命令是否用 `-q` 选项启动. 
 
 ### isVerbose
 
 * `isVerbose(): bool`
 
-Check if the `dep` command was started with the `-v` option.
+检查 `dep` 命令是否用 `-v` 选项启动.
 
 ### isVeryVerbose
 
 * `isVeryVerbose(): bool`
-
-Check if th `dep` command was started with the `-vv` option.
+  
+检查 `dep` 命令是否用 `-vv` 选项启动.
 
 ### isDebug
 
 * `isDebug(): bool`
 
-Check if the `dep` command was started with the `-vvv` option.
-
+检查 `dep` 命令是否用 `-vvv` 选项启动.
 
 ### commandExist
 
 * `commandExist(string $command): bool`
 
-Check if a command exists.
+检查命令是否存在.
 
 ~~~php
 if (commandExist('composer')) {
@@ -348,4 +350,4 @@ if (commandExist('composer')) {
 
 * `parse(string $line): string`
 
-Parse config occurrence `{{` `}}` in `$line`.
+解析在配置 `$line` 中出现的 `{{` `}}`.

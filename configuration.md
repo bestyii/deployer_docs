@@ -1,126 +1,124 @@
-# Configuration
+# 配置
 
-To setup a configuration parameter, use `set` function, and to get it inside task use `get` function.
-
-~~~php
+若要设置配置参数, 使用 `set` 函数;若要在任务中获取配置参数, 使用 `get` 函数.
+```php
 set('param', 'value');
 
 task('deploy', function () {
     $param = get('param');
 });
-~~~
+```
 
-Each parameter can be overridden for each host:
+各个主机可以分别覆盖这些参数:
 
-~~~php
+```php
 host(...)
     ->set('param', 'new value');
-~~~
+```
 
-Configuration parameters also can be specified as callback function, which will be executed on remote host on first `get` call:
+配置参数也可以指定为回调函数, 该函数将在第一次 `get` 调用时在远程主机上执行:
 
-~~~php
+```php
 set('current_path', function () {
     return run('pwd');
 });
-~~~
+```
 
-You can use a param's values inside `run` calls with `{{ }}`, instead of doing this:
+可以在调用 `run` 函数中使用带有 `{{ }}` 的参数值, 就像下面这样:
 
-~~~php
-run('cd ' . get('release_path') . ' && command');
-~~~
-
-You can do this:
-
-~~~php
+```php
 run('cd {{release_path}} && command');
-~~~
+```
 
-Common recipe comes with a few predefined config params listed below. 
+替代下面这种写法:
 
-To get list of available params run:
+```php
+run('cd ' . get('release_path') . ' && command');
+```
 
-~~~sh
+
+`common recipe`附带了一些预定义的配置参数, 如下所示. 
+
+获取可用参数的列表, 请运行:
+
+```sh
 dep config:dump
-~~~
+```
 
-Show current deployed release:
+显示当前部署的版本:
 
-~~~bash
+```bash
 dep config:current
-~~~
+```
 
 Show inventory:
 
-~~~bash
+```bash
 dep config:hosts
-~~~
+```
 
 
 
-Below is a list of common variables.
+常见变量列表.
 
 ### deploy\_path
 
-Where to deploy application on remote host. You should define this variable for all of your hosts.
-For example, if you want to deploy your app to home directory:
-
-~~~php
+在远程主机上部署应用程序的位置. 应该为所有主机定义此变量. 
+例如, 要将应用程序部署到主目录下:
+```php
 host(...)
     ->set('deploy_path', '~/project');
-~~~
+```
 
 ### hostname
 
-Current hostname. Automatically set by `host` function.
+当前主机名. 由 `host` 函数自动设置.
 
 ### user
 
-Current user name. Defaults to the current git user name:
+当前用户名. 默认为当前git用户名:
 
-~~~php
+```php
 set('user', function () {
     return runLocally('git config --get user.name');
 });
-~~~
+```
 
-You can override it in _deploy.php_ for example to use env var:
+你可以在 _deploy.php_ 中覆盖它, 如, 使用环境变量中的值:
 
-~~~php
+```php
 set('user', function () {
     return getenv('DEP_USER');
 });
-~~~
+```
 
-`user` parameter can be used to configure notification systems:
+`user` 参数可用于配置通知系统:
 
-~~~php
-set('slack_text', '{{user}} deploying {{branch}} to {{hostname}}');
-~~~
+```php
+set('slack_text', '{{user}} 正在部署分支 {{branch}} 到 {{hostname}}主机上');
+```
 
 ### release\_path
 
-Full path to the current release directory. Current dir path in non-deploy contexts.
-Use it as working path for your build:
+当前版本目录的完整路径。非部署上下文中的当前目录路径。
+将其用作构建的工作路径:
 
-~~~php
+```php
 task('build', function () {
     cd('{{release_path}}');
     // ...
 });
-~~~
+```
 
-> By default, working path is `release_path` for simple task:
-> ~~~php
+> 默认情况下, 简单任务的工作路径是 `release_path`:
+> ```php
 > task('build', 'webpack -p');
-> ~~~
+> ```
 
 ### previous\_release
 
-Points to previous release if it exists. Otherwise variable doesn't exist.
-
-~~~php
+前一个版本的完整路径. (如果第一次发布, 变量不存在)
+```php
 task('npm', function () {
     if (has('previous_release')) {
         run('cp -R {{previous_release}}/node_modules {{release_path}}/node_modules');
@@ -128,44 +126,48 @@ task('npm', function () {
     
     run('cd {{release_path}} && npm install');
 });
-~~~
+```
 
 ### ssh\_multiplexing
 
-Use [ssh multiplexing](https://en.wikibooks.org/wiki/OpenSSH/Cookbook/Multiplexing) to speedup the native ssh client.
+使用 [ OpenSSH 多路复用](https://en.wikibooks.org/wiki/OpenSSH/Cookbook/Multiplexing) 提速原生客户端.
 
-~~~php
+```php
 set('ssh_multiplexing', true);
-~~~
+```
 
 ### default\_stage
 
-If the hosts declaration has stages, this option allows you to select the default stage to deploy with `dep deploy`.
-
-~~~php
+默认场景设置. 如果主机有场景的声明，则使用`dep deploy`命令部署时, 自动选择有默认场景声明的主机进行部署。
+```php
 set('default_stage', 'prod');
 
 host(...)
     ->stage('prod');
-~~~
+```
 
-You can also set callable as an argument if you need some more complex ways to determine default stage.
+如果需要复杂的方式来声明场景, 你还可以将可调用的程序(callable)做为参数.
 
 Having callable in set() allows you to not set the value when declaring it, but later when it is used. There is no difference 
-when we assign a simple string. But when we assign value of a function, then this function must be called at once, if not used 
-as callable. With callable, it can be called when used, so a function which determines a variable can be overwritten by the user with its own function. This is the great power of having callable in set() instead of direct in function calls.
+when we assign a simple string.
+ But when we assign value of a function, then this function must be called at once, if not used as callable. 
+With callable, it can be called when used, so a function which determines a variable can be overwritten by 
+the user with its own function. This is the great power of having callable in set() instead of direct in function calls.
 
+在`set()`中使用可调用程序时,允许在声明值时不设置该值, 而是在稍后使用该值时设置该值。这种情况与指定一个简单的字符串没有区别。
+但当我们给一个函数赋值时，如果这个函数不能作为可调用函数使用，那么它必须立即被调用。
+通过callable，可以在使用时调用它，因此声明变量的函数可以被用户用自己的函数覆盖。这是在`set()`中使用callable而不是在函数调用中使用direct的强大功能。
 **Example 1: Direct function assign in set()**
 
 Lets assume that we must include some third party recipe that is setting 'default_stage' like this:
-~~~php
+```php
 set('default_stage', \ThirdPartyVendor\getDefaultStage());
-~~~
+```
 
 And we want to overwrite this in our deploy.php with our own value:
-~~~php
+```php
 set('default_stage', \MyVendor\getDefaultStage());
-~~~
+```
 
 Third party recipe should avoid a direct function call, because it will be called always even if we overwrite it with 
 our own set('default_stage', \MyVendor\getDefaultStage()). Look at the next example how the third party recipe should use
@@ -174,154 +176,152 @@ callable in that case.
 **Example 2: Callable assign in set()**
 
 Lets assume that we must include some third party recipe that is setting 'default_stage' like this:
-~~~php
+```php
 set('default_stage', function() {
     return \ThirdPartyVendor\getDefaultStage();
 });
-~~~
+```
 
 And we want to overwrite this in our deploy.php:
-~~~php
+```php
 set('default_stage', function() {
     return \MyVendor\getDefaultStage();
 });
-~~~
+```
 
 The result is that only \MyVendor\getDefaultStage() is run.
 
 ### keep\_releases
 
-Number of releases to keep. `-1` for unlimited releases. Default to `5`.
+保留的发布版本数量. `-1` 为无限制. 默认值 `5`.
 
 ### repository
 
-Git repository of the application.
+Git 仓库.
 
-To use a private repository, you need to generate a SSH-key on your host and add it to the repository
-as a Deploy Key (a.k.a. Access Key). This key allows your host to pull out the code. Or use can use agent forwarding. 
+要使用私有库，需要在主机上生成SSH密钥(SSH-key)并将其添加到存储库中作为部署密钥（又称访问密钥）。这个密钥允许你的主机取出代码。或者使用代理转发。
 
-Note that the first time a host connects, it can ask to add host in `known_hosts` file. The easiest way to do this is
-by running `git clone <repo>` on your host and saying `yes` when prompted.
+请注意，当主机第一次连接时，它要求在 `known_hosts` 文件中添加主机。
+最简单的方法是在主机上运行 `git clone <repo>` 并在提示时说 `yes` 。
 
 ### git\_tty
 
-Allocate TTY for `git clone` command. `false` by default. This allow you to enter a passphrase for keys or add host to `known_hosts`.
+为 `git clone` 命令分配TTY。默认情况下为`false` 。这允许您输入密钥的密码短语或将主机添加到`known_hosts`。
 
-~~~php
+```php
 set('git_tty', true);
-~~~
+```
 
 ### git\_recursive
 
-Set the `--recursive` flag for git clone. `true` by default. Setting this to `false` will prevent submodules from being cloned as well.
+为git clone设置 `--recursive` 标志。默认情况下为 `true` 。将此设置为 `false` 将阻止子模块被克隆。
 
-~~~php
+```php
 set('git_recursive', false);
-~~~
+```
 
 ### branch
 
-Branch to deploy.
+要部署的分支.
 
-If you want to deploy a specific tag or a revision, you can use `--tag` and `--revision` options while running `dep deploy`. E.g.
+如果要部署特定的标记或修订，可以在运行 `dep deploy`时使用 `--tag` 和 `--revision` 选项。例如:
 
-~~~bash
+```bash
 dep deploy --tag="v0.1"
 dep deploy --revision="5daefb59edbaa75"
-~~~
+```
 
-Note that `tag` has higher priority than `branch` and lower than `revision`.
+请注意 `tag` 的优先级高于 `branch` ，而低于 `revision`。
 
 ### shared\_dirs
 
-List of shared dirs.
+共享目录列表.
 
-~~~php
+```php
 set('shared_dirs', [
     'logs',
     'var',
     ...
 ]);
-~~~
+```
 
 ### shared\_files
 
-List of shared files.
+共享文件列表.
 
 ### copy\_dirs
 
-List of files to copy between release.
+要在版本之间复制的文件列表.
 
 ### writable\_dirs
 
-List of dirs which must be writable for web server.
+web服务器中必须可写的目录列表.
 
 ### writable\_mode
 
-Writable mode
+可写模式
 
-* `acl` (*default*) use `setfacl` for changing ACL of dirs.
-* `chmod` use unix `chmod` command,
-* `chown` use unix `chown` command,
-* `chgrp` use unix `chgrp` command,
+* `acl` (*默认*) 使用 `setfacl` 用于更改目录的ACL.
+* `chmod` 使用 unix `chmod` 命令,
+* `chown` 使用 unix `chown` 命令,
+* `chgrp` 使用 unix `chgrp` 命令,
 
 ### writable\_use\_sudo
 
-Whether to use `sudo` with writable command. Default to `false`.
+是否将 `sudo` 与可写命令一起使用。默认为 `false`。
 
 ### writable\_chmod\_mode
 
-Mode for setting `writable_mode` in `chmod`. Default: `0755`.
+用于在`writable_mode`的模式时，`chmod`设置的权限 。默认值：`0755`。
+
 
 ### writable\_chmod\_recursive
 
-Whether to set `chmod` on dirs recursively or not. Default: `true`.
+是否对`chmod` 操作的目录进行递归设置 。默认值：`true`。
 
 ### http\_user
 
-User the web server runs as. If this parameter is not configured, deployer try to detect it from the process list. 
+运行web服务器的用户。如果未配置此参数，deployer将尝试从进程列表中检测它。
 
 ### clear\_paths
 
-List of paths which need to be deleted in release after updating code. 
+更新代码后需要在发布版本中删除的路径列表。
 
 ### clear\_use\_sudo
 
-Use or not `sudo` with clear\_paths. Default to `false`.
+是否使用 `sudo` 在clear\_paths中一起使用。默认为 `false`。
 
 ### cleanup\_use\_sudo
 
-Whether to use `sudo` with `cleanup` task. Default to `false`.
+是否将 `sudo` 与 `cleanup` 任务一起使用。默认为`false`。
 
 ### use\_relative\_symlink
 
-Whether to use relative symlinks. By default deployer will detect if the system supports relative symlinks and use them.
-
-> Relative symlink used by default, if your system supports it.
+是否使用软连接。默认情况下，deployer将检测系统是否支持软连接并使用它们。
+> 如果系统支持，则默认使用软连接.
 
 ### use\_atomic\_symlink
 
-Whether to use atomic symlinks. By default deployer will detect if system supports atomic symlinks and use them.
-
-> Atomic symlinking is used by default, if your system supports it.
+是否使用原子符号链接。默认情况下，部署程序将检测系统是否支持原子符号链接并使用它们。
+> 如果系统支持，则默认情况下使用原子符号链接.
 
 ### composer\_action
 
-Composer action. Default is `install`.
+Composer 动作. 默认为 `install`.
 
 ### composer\_options
 
-Options for Composer.
+Composer 选项.
 
 ### env
 
-Array of environment variables.
+环境变量数组.
 
-~~~php
+```php
 set('env', [
     'VARIABLE' => 'value',
 ]);
-~~~
+```
 
 
-Read more about [task definitions](tasks.md).
+了解更多请关注 [任务](tasks.md).

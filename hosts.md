@@ -1,10 +1,9 @@
-# Hosts
+# 主机 (Hosts)
 
-Defining a host in Deployer is necessary to deploy your application. It can be a remote machine, a local machine or Amazon EC2 instances.
-Each host contains a hostname, a stage, one or more roles and configuration parameters. 
+在Deployer中定义主机是部署应用所必需的. 它可以是远程计算机、本地计算机或云主机实例.
+每个主机都包含主机名(hostname、环境(stage)、一个或多个角色(roles)以及配置参数.
 
-You can define hosts with the `host` function in `deploy.php` file. Here is an example of a host definition:
-
+在 `deploy.php` 文件中使用 `host` 函数定义主机。以下是主机定义的示例：
 ~~~php
 host('domain.com')
     ->stage('production')
@@ -12,10 +11,9 @@ host('domain.com')
     ->set('deploy_path', '~/app');
 ~~~
 
-Host *domain.com* has stage `production`, one role `app` and a configuration parameter `deploy_path` = `~/app`.
+主机 *domain.com* 包含 `production`(生产) 环境(stage)定义, 一个 `app` 角色以及一个配置参数 `deploy_path` = `~/app`.
 
-Hosts can also be described by using yaml syntax. Write this in a `hosts.yml` file:
-
+主机还可以用yaml语法来描述. 把下列定义保存到文件 `hosts.yml`:
 ~~~yaml
 domain.com:
   stage: production
@@ -23,14 +21,14 @@ domain.com:
   deploy_path: ~/app
 ~~~
 
-Then to `deploy.php`:
+然后在 `deploy.php`中引用:
 
 ~~~php
 inventory('hosts.yml');
 ~~~
 
-Make sure that your `~/.ssh/config` file contains information about your domains and how to connect.
-Or you can specify that information in the `deploy.php` file itself.
+确保`~/.ssh/config`文件包含有关连接信息.
+或者您可以在 `deploy.php` 文件本身中定义.
 
 ~~~php
 host('domain.com')
@@ -44,12 +42,12 @@ host('domain.com')
     ->addSshOption('StrictHostKeyChecking', 'no');
 ~~~
 
-> **Best practice** is to leave connecting information for hosts in the `~/.ssh/config` file.
-> That way you allow different users to connect in different ways.
+> **最佳实践** 在文件 `~/.ssh/config` 中保存相关连接信息.
+> 这样就允许不同的用户以不同的方式进行连接.
 
-### Overriding config per host
+### 主机配置覆盖
 
-For example, if you have some global configuration you can override it per host:
+例如，如果您有一些全局配置, 则可以按主机覆盖它:
 
 ~~~php
 set('branch', 'master');
@@ -59,12 +57,11 @@ host('prod')
     ->set('branch', 'production');
 ~~~
 
-Now onthe  _prod_ host the branch is set to `production`, on others to `master`.
+这样在  _prod_ 主机上分支设置成了 `production`, 其他主机默认是 `master`.
 
-### Gathering host info
+### 获取主机信息
 
-Inside any task, you can get host config with the `get` function, and the host object with the `host` function.
-
+在任何任务中, 可以通过`get`函数获取主机配置, 通过`host`函数获取主机对象.
 ~~~php
 task('...', function () {
     $deployPath = get('deploy_path');
@@ -74,17 +71,16 @@ task('...', function () {
 });
 ~~~
 
-### Multiple hosts
+### 多主机
 
-You can pass multiple hosts to the `host` function:
-
+可以传多个主机参数给`host`函数:
 ~~~php
 host('110.164.16.59', '110.164.16.34', '110.164.16.50', ...)
     ->stage('production')
     ...
 ~~~
 
-If your inventory `hosts.yml` file contains multiple, you can change the config for all of them in the same way.
+如果你主机列表文件`hosts.yml`包含多个主机，您可以用相同的方式更改所有的配置.
 
 ~~~php
 inventory('hosts.yml')
@@ -92,27 +88,26 @@ inventory('hosts.yml')
     ...
 ~~~
 
-### Host ranges
+### 主机范围
 
-If you have a lot of hosts following similar patterns, you can describe them like this rather than listing each hostname:
+如果有许多主机遵循类似的模式,可以这样描述它们,而不是列出每个主机名：
 
 ~~~php
 host('www[01:50].domain.com');
 ~~~
 
-For numeric patterns, leading zeros can be included or removed, as desired. Ranges are inclusive. 
+对于数字模式，可以根据需要包含或删除补位的`0`.
 
-You can also define alphabetic ranges:
+您还可以定义字母范围：
 
 ~~~php
 host('db[a:f].domain.com');
 ~~~
 
-### Localhost
+### 本地主机 (Localhost)
 
-If you need to build your release before deploying on a remote machine, or deploy to localhost instead of remote,
-you need to define localhost:
-
+如果您需要在部署到远程主机之前构建发行版，或者部署到localhost而不是remote，
+您需要定义localhost:
 ~~~php
 localhost()
     ->stage('production')
@@ -120,17 +115,16 @@ localhost()
     ...
 ~~~
 
-### Host aliases
+### 主机别名 (Host aliases)
 
-If you want to deploy an app to one host, but for example in different directories, you can describe two host aliases:
-
+如果要将应用程序部署到同一个主机(例如在不同的目录中), 可以描述两个主机别名:
 ~~~php
 host('domain.com/green', 'domain.com/blue')
     ->set('deploy_path', '~/{{hostname}}')
     ...
 ~~~
 
-For Deployer, those hosts are different ones, and after deploying to both hosts you will see this directory structure:
+这对于Deployer, 相当于两个主机, 部署后您将看到以下目录结构：
 
 ~~~
 ~
@@ -141,10 +135,9 @@ For Deployer, those hosts are different ones, and after deploying to both hosts 
         └── ...
 ~~~
 
-### One host for a few stages
+### 同主机下多环境(stage)
 
-Often you have only one server for prod and beta stages. You can easily configure them:
-
+有时, prod和beta环境只有一台服务器. 您可以轻松地配置它们:
 ~~~php
 host('production')
     ->hostname('domain.com')
@@ -155,23 +148,22 @@ host('beta')
     ->set('deploy_path', '~/beta.domain.com');    
 ~~~
 
-Now you can deploy with these commands:
+可以使用以下命令进行部署：
 
 ~~~sh
 dep deploy production
 dep deploy beta
 ~~~
 
-### Inventory file
+### 主机清单文件
 
-Include hosts defined in inventory files `hosts.yml` by `inventory` function:
+通过 `inventory` 函数引入主机清单文件`hosts.yml`：
 
 ~~~php
 inventory('hosts.yml');
 ~~~
 
-Here an example of an inventory file `hosts.yml` with the full set of configuration settings
-
+下面是一个带有全套配置的主机清单示例文件 `hosts.yml`
 ~~~yaml
 domain.com:
   hostname: domain.com
@@ -192,11 +184,9 @@ domain.com:
   extra_param: "foo {{hostname}}"
 ~~~
 
-> **Note** that, as with the `host` function in the *deploy.php* file, it's better to omit information such as 
-> *user*, *port*, *identityFile*, *forwardAgent* and use it from the `~/.ssh/config` file instead.
+> **注意** 就像在 *deploy.php* 文件中通过 `host` 函数定义主机时的建议, 最好省略如: *user*、 *port*、 *identityFile*、 *forwardAgent* 相关参数, 并在文件 `~/.ssh/config` 中设置.
 
-If your inventory file contains many similar host definitions, you can use YAML extend syntax:
-
+如果清单文件中定义了多个主机, 可以使用YAML的扩展语法:
 ~~~yaml
 .base: &base
   roles: app
@@ -214,10 +204,9 @@ beta1.domain.com:
 ...
 ~~~
 
-Hosts that start with `.` (*dot*) are called hidden and are not visible outside that file.
- 
-To define localhost in inventory files add a `local` key:
+以`.`（*点*）开头的主机称为隐藏主机，在该文件外不可见。 
 
+在清单文件中添加`local`声明:
 ~~~yaml
 localhost:
   local: true
@@ -227,7 +216,7 @@ localhost:
 
 ### Become
 
-Deployer allows you to ‘become’ another user, different from the user that logged into the machine (remote user).
+Deployer允许您 '成为(become)' 另一个用户，该用户有别与登录到计算机的用户(远程用户).
 
 ~~~php
 host('domain.com')
@@ -235,8 +224,8 @@ host('domain.com')
     ...
 ~~~
 
-Deployer uses `sudo` privilege escalation method by default.
+默认情况下，Deployer使用 `sudo` 权限提升方法。
 
-> **Note** that become doesn't work with `tty` run option.
+> **注意** 这个become在`tty`时无效.
 
-Next: [deployment flow](flow.md).
+下一节: [流水线](flow.md).

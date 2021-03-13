@@ -1,6 +1,6 @@
-# Getting Started
+# 新手入门
 
-First, let's [install Deployer](installation.md). Run the following commands in the terminal:
+首先, 我们来 [安装 Deployer](installation.md). 在终端运行以下命令:
 
 ```sh
 curl -LO https://deployer.org/deployer.phar
@@ -8,142 +8,141 @@ mv deployer.phar /usr/local/bin/dep
 chmod +x /usr/local/bin/dep
 ```
 
-Now you can use Deployer via the `dep` command. 
-Open up a terminal in your project directory and run:
+现在你就可以通过命令 `dep` 来使用Deployer. 
+打开终端，在你项目的目录中运行初始化命令:
 
 ```sh
 dep init
 ```
 
-This command will create the `deploy.php` file in the current directory. It is called a *recipe* and contains configuration and tasks for deployment.
-By default all recipes extend the [common](https://github.com/deployphp/deployer/blob/master/recipe/common.php) recipe. Place your _deploy.php_ file in root of your project and type `dep` or `dep list` command. You will see a list of all available tasks.
+这个命令会在当前目录创建 `deploy.php` 文件. 他被称之为 *食谱（recipe）* 包含了部署相关的配置与任务.
+默认情况下，所有的食谱都继承自 [common](https://github.com/deployphp/deployer/blob/master/recipe/common.php) . 把你的 _deploy.php_ 放在项目的根目录中，输入命令 `dep` 或 `dep list` . 将会看到全部可用的命令集.
 
-> You can call `dep` command in any subdirectory of your project.
+> 你也可以在项目中的任何子目录中调用 `dep` 命令.
 
-Defining your task is really simple:
+## 创建任务
+
+定义你的个性化任务非常简单:
  
 ```php
 task('test', function () {
-    writeln('Hello world');
+    writeln('Hello phpdeployer.com');
 });
 ```
 
-To run that task, run:
+执行这个任务, 运行命令:
 
 ```sh
 dep test
 ```
 
-The output will be:
+接下来会输出:
 
 ```text
 ➤ Executing task test
-Hello world
+Hello phpdeployer.com
 ✔ Ok
 ```
-
-Now let's create a task which will run commands on a remote host. For that we must configure deployer. 
-Your newly created `deploy.php` file should contain a `host` declaration like this:
+## 在远端执行任务
+我们要想在远端执行任务，必须要先配置 deployer. 
+新创建的 `deploy.php` 文件, 应该包含 `host` 声明, 如:
  
 ```php
-host('domain.com')
+host('phpdeployer.com')
     ->stage('production')    
-    ->set('deploy_path', '/var/www/domain.com');
+    ->set('deploy_path', '/var/www/phpdeployer_com');
 ```
 
-> Also it's possible to declare hosts in a separate yaml file. Find out more about the [inventory](hosts.md#inventory-file).
+> 也可以在单独的yaml文件中声明主机. 了解更多请参考: [inventory](hosts.md#inventory-file).
 
-You can find out more about host configurations [here](hosts.md). Now let's define a task which will output a 
-`pwd` command from the remote host:
+更多配置参考:[主机](hosts.md). 
+
+接下来我们定义一个任务,这个任务会在远程主机中执行linux `pwd` 命令:
  
 ```php
 task('pwd', function () {
     $result = run('pwd');
-    writeln("Current dir: $result");
+    writeln("当前目录: $result");
 });
 ```
 
-Run `dep pwd`, and you will get this:
+运行命令 `dep pwd`, 你将得到如下结果:
 
 ```text
 ➤ Executing task pwd
-Current dir: /var/www/domain.com
+当前目录: /var/www/phpdeployer_com
 ✔ Ok
 ```
 
-Now let's prepare for our first deploy. You need to configure parameters such as `repository`, `shared_files,` and others:
+好啦，来准备我们的第一个部署工作. 你需要配置一些参数,如 `repository`, `shared_files,` 以及其它:
    
 ```php
 set('repository', 'git@domain.com:username/repository.git');
 set('shared_files', [...]);
 ```
 
-You can return the parameter values in each task using the `get` function. 
-Also you can override each configuration for each host:
-
+你可以在任何一个任务中通过`get`方法调用这个参数.
+还可以在任何一个主机的声明中覆盖这个参数:
 ```php
-host('domain.com')
+host('phpdeployer.com')
     ...
     ->set('shared_files', [...]);
 ```
 
-Read more about [configuring](configuration.md) deploy.
+更多部署配置参考: [配置](configuration.md) .
 
 
-Now let's deploy our application:
+现在来部署我们的程序:
  
 ```sh
 dep deploy
 ```
 
-To include extra details in the output, you can increase verbosity with the `--verbose` option: 
-
-* `-v`  for normal output,
-* `-vv`  for more verbose output,
-* `-vvv`  for debug.
+要在输出中包含额外的详细信息，可以使用 `--verbose` 选项增加详细程度:
+* `-v`   标准输出
+* `-vv`  详细输出
+* `-vvv` debug
  
-Deployer will create the following directories on the host:
+Deployer 将在主机上创建以下目录:
 
-* `releases`  contains releases dirs,
-* `shared` contains shared files and dirs,
-* `current` symlink to current release.
+* `releases`  包含各版本的文件目录
+* `shared` 包含共享的文件和目录
+* `current` 软链接到当前版本
 
-Configure your hosts to serve your public directory from `current`.
+将主机的公用目录配置为 `current` 向外提供服务
 
-> Note that deployer uses [ACL](https://en.wikipedia.org/wiki/Access_control_list) by default for setting up permissions.
-> You can change this behavior with `writable_mode` config.    
+> ⚠️ 注意: that deployer 默认情况下，采用 [ACL](https://en.wikipedia.org/wiki/Access_control_list) 设置权限.
+> 可以使用 `writable_mode` 配置更改此行为. 
 
-By default deployer keeps the last 5 releases, but you can increase this number by modifying the associated parameter:
+默认情况下 deployer 保留5个版本, 你可以通过下面参数增量:
  
 ```php
 set('keep_releases', 10);
 ```
 
-If there is an error in the deployment process, or something is wrong with your new release, 
-simply run the following command to rollback to the previous working release:
+如果部署过程中出现错误，或者新版本有问题，只需运行以下命令即可回滚到上一个可运行的版本:
 
 ```sh
 dep rollback
 ```
 
-You may want to run some task before/after other tasks. Configuring that is really simple!
+您可能希望在其他任务之前(之后)运行某些任务。这真的很简单！
 
-Let's reload php-fpm after `deploy` finishes:
-
+在 `deploy` 任务完成之后重载php-fpm:
 ```php
 task('reload:php-fpm', function () {
-    run('sudo /usr/sbin/service php7-fpm reload');
+    run('sudo service php-fpm reload');
 });
 
 after('deploy', 'reload:php-fpm');
 ```
 
-If you need to connect to the host, Deployer has a shortcut for faster access:
+如果您需要连接到主机，Deployer提供了一个快捷方式:
 
 ~~~sh
 dep ssh
 ~~~
 
-This command will connect to selected hosts and cd to `current_path`.
+此命令将连接到选定的主机,并且进入到 `current_path`.
 
-Read more about [configuring](configuration.md) deploy. 
+了解更多部署配置请参考: [配置](configuration.md) . 

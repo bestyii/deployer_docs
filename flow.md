@@ -1,7 +1,7 @@
-# Flow
+# 流水线 (Flow)
 
-If your recipe is based on the *common* recipe or one of the framework recipes shipped with Deployer, then you are using one of our default flows.
-Each flow is described as a group of other tasks in the `deploy` name space. A common deploy flow may look like this:
+如果你的recipe是基于Deployer自带的 *common* recipe 或框架recipe, 则使用的是一个默认的流水线.
+每个流水线是在 `deploy` 命名空间内描述的一组其他任务.一个常见的部署流程如下所示:
 
 ~~~php
 task('deploy', [
@@ -20,44 +20,45 @@ task('deploy', [
 ]);
 ~~~
 
-Framework recipes may differ in flow, but the basic structure is the same. You can create your own flow by overriding the `deploy` task, but a better solution is to use the cache. 
-For example, if you want to run some task before you symlink the new release:
+框架recipes可能在流程上有所不同, 但基本结构是相同的. 您可以通过重写 `deploy` 任务来创建自己的流, 但更好的解决方案是使用缓存.
+
+例如, 如果要在软链接新版本之前运行某些任务: 
 
 ~~~php
 before('deploy:symlink', 'deploy:build');
 ~~~
 
-Or, to send notifications after a successful deployment:
+或者, 在成功部署后发送通知:
 
 ~~~php
 after('success', 'notify');
 ~~~
 
-The next section provides a short overview of each task. 
+接下来快速了解一下每项任务.
 
 ### deploy:prepare
 
-Preparation for deployment. Checks if `deploy_path` exists, otherwise create it. Also checks for the existence of the following paths:
+准备部署. 检查 `deploy_path` 是否存在, 否则创建它. 同时检查是否存在以下路径:
 
-* `releases` – in this dir will be stored the releases.
-* `shared` – shared files across all releases.
-* `.dep` – metadata used by Deployer.
+* `releases` – 在这个目录中, 将存储版本.
+* `shared` – 跨所有版本共享文件.
+* `.dep` – 部署程序使用的元数据.
 
 ### deploy:lock
 
-Locks deployment so only one concurrent deployment can be running. To lock deployment, this task checks for the existence of the  `.dep/deploy.lock` file. If the deploy process was cancelled by Ctrl+C, run `dep deploy:unlock` to delete this file. In the event that deployment fails, the `deploy:unlock` task will be triggered automatically. 
+部署锁, 只能运行一个并发部署. 此任务将检查 `.dep/deploy.lock` 文件. 如果部署过程被`Ctrl+C`取消, 请运行 `dep deploy:unlock` 删除此文件. 如果部署失败, 则 `deploy:unlock` 任务将自动触发. 
 
 ### deploy:release
 
-Create a new release folder based on the `release_name` config parameter. Also reads `.dep/releases` to get a list of releases that were created before. 
+基于 `release_name` 配置参数创建新的发布文件夹. 还读取 `.dep/releases` 以获取以前创建的版本列表.
 
-Also, if in the `deploy_path` there was a previous release symlink, it will be deleted.
+此外, 如果在 `deploy_path` 中有早期版本的符号链接, 则会将其删除.
 
 ### deploy:update_code
 
-Download a new version of code using Git. If you are using Git version 2.0 and `git_cache` config is turned on, this task will use files from the previous release, so only changed files will be downloaded.
+使用Git下载新版本的代码. 如果您使用的是Git 2.0版并且 `git_cache` 配置已打开, 则此任务将使用以前版本中的文件, 因此只下载更改的文件. 
 
-Override this task in `deploy.php` to create your own code transfer strategy:
+在 `deploy.php` 中重写此任务, 创建自己的代码转移策略: 
 
 ~~~php
 task('deploy:update_code', function () {
@@ -67,18 +68,17 @@ task('deploy:update_code', function () {
 
 ### deploy:shared
 
-Creates shared files and directories from the `shared` directory into the `release_path`. You can specify shared directories and files in `shared_dirs` and `shared_files` config parameters. The process is split into the following steps:
+从 `shared` 目录创建共享文件和目录到 `release_path`. 您可以在 `shared_dirs` 和 `shared_files` 配置参数中指定共享目录和文件. 该过程分为以下步骤: 
 
-* Copy dir from `release_path` to `shared` if doesn't exists,
-* delete dir from `release_path`,
-* symlink dir from `shared` to `release_path`.
+* 指定的目录如果不存在将这些目录从 `release_path` 复制到`shared` 中, 
+* 从 `release_path`中删除这些目录, 
+* 软链接这些目录从`shared`到 `release_path`.
 
-The same steps are followed for shared files. If your system supports relative symlinks then they will be used, otherwise absolute symlinks wil be used.
+共享文件也遵循同样的步骤. 如果您的系统支持相对符号链接, 则将使用它们, 否则将使用绝对符号链接. 
 
 ### deploy:writable
 
-Makes the directories listed in `writable_dirs` writable using `acl` mode (using setfacl command) by default. This task will try to guess http_user name, or you can configure it yourself:
-
+设置 `writable_dirs` 参数中列出的目录可写. 默认情况下, 使用 `acl` 模式（使用`setfacl`命令）此任务将尝试猜测http_user用户名, 或者可以自己配置它: 
 ~~~php
 set('http_user', 'www-data');
 
@@ -87,20 +87,20 @@ host(...)
     ->set('http_user', 'www-data');
 ~~~
 
-Also this task supports other writable modes:
+此任务还支持其他可写模式:
 
 * chown
 * chgrp
 * chmod
 * acl
 
-To use one of them add this:
+要使用其中一个, 请添加以下内容:
 
 ~~~php
 set('writable_mode', 'chmod');
 ~~~
 
-To use sudo with writable add this:
+要将sudo与可写设置一起使用, 请添加以下内容:
 
 ~~~php
 set('writable_use_sudo', true);
@@ -108,19 +108,19 @@ set('writable_use_sudo', true);
 
 ### deploy:vendors
 
-Install composer dependencies. You can configure composer options with the `composer_options` parameter. 
+安装 composer 依赖. 可以使用 `composer_options` 参数来配置composer选项. 
 
 ### deploy:clear_paths
 
-Deletes dirs specified in `clear_paths`. This task can be run with sudo using the `clear_use_sudo` parameter.
+删除 `clear_paths` 中指定的目录. 可以使用 `clear_use_sudo` 参数与sudo一起运行此任务. 
 
 ### deploy:symlink
 
-Switch the `current` symlink to `release_path`. If target system supports atomic switching for symlinks it will used.
+将 `current` 软链接切换到 `release_path`. 如果目标系统支持符号链接的原子切换, 它将被使用. 
 
 ### deploy:unlock
 
-Deletes the `.dep/deploy.lock` file. You can run this task directly to delete the lock file:
+删除`.dep/deploy.lock` 文件. 您可以直接运行此任务来删除锁文件: 
 
 ~~~sh
 dep deploy:unlock staging
@@ -128,8 +128,8 @@ dep deploy:unlock staging
 
 ### cleanup
 
-Clean up old releases using the `keep_releases` option. `-1` is treated as unlimited releases.
+根据 `keep_releases` 选项来清理旧版本. `-1` 被视为不清理. 
 
 ### success
 
-Prints a success message.
+打印成功消息. 

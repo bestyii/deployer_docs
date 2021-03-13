@@ -1,31 +1,31 @@
 >
-> # This is documentation for v6.x version
-> ### Documentation for v7.x migrated into [deployer repository](https://github.com/deployphp/deployer/tree/master/docs)
+> # v6.x 版本文档
+> ###  v7.x 版本文档被合并到 [deployer 仓库](https://github.com/deployphp/deployer/tree/master/docs)
 >
 
-# Documentation
+# 文档
 
-## Main Concepts
+## 主要概念
 
-* [Getting started](getting-started.md)
-* [Installation](installation.md)
-* [Configuration](configuration.md)
-* [Tasks](tasks.md)
-* [Hosts](hosts.md)
-* [Flow](flow.md)
-* [CLI Usage](cli.md)
-* [API Reference](api.md)
+* [新手入门](getting-started.md)
+* [安装](installation.md)
+* [配置](configuration.md)
+* [任务](tasks.md)
+* [主机](hosts.md)
+* [流水线](flow.md)
+* [CLI 用法](cli.md)
+* [API 参考资料](api.md)
 
-## Advanced
+## 高级
 
-* [Strategy](advanced/deploy-strategies.md)
-* [Deploy and Git](advanced/deploy-and-git.md)
-* [Parallel IO](advanced/parallel-io.md)
+* [策略](advanced/deploy-strategies.md)
+* [部署 与 Git](advanced/deploy-and-git.md)
+* [并行输入输出（Parallel IO）](advanced/parallel-io.md)
 
-## How To
+## 如何做系列
 
-* [How to deploy Laravel](how-to-deploy-laravel.md)
+* [如何使用Deployer部署Laravel项目](how-to-deploy-laravel.md)
 
-## Examples
+## 例子
 
 * [Inventory](examples/inventory.md)

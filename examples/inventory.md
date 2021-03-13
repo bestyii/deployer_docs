@@ -1,13 +1,14 @@
-# Inventory Examples
+# 主机清单模版 (Inventory Examples)
 
-You can choose any inventory management you want or use one of next examples.
+你可以从下列例子中选择适合你的方式.
 
-### One or two hosts
+### 主机数量不多的时候
 
-In most scenarios your project will have one or two hosts: one for production and one for staging.
-So there is no need to separate inventory file, you can write everything in single _deploy.php_ file.
+在大多数情况下, 一般项目会有一个或两个主机: 一个用于生产, 另一个用于其他阶段.
 
-For single host you don't need anything. Deployer will deploy to all defined hosts if no _stage_ parameter specified.
+所以不需要独立的主机清单文件, 把全部的配置直接写到 _deploy.php_ 文件中.
+
+对于单个主机. Deployer 不需要指定 _stage_ 参数.
 
 ```php
 set('deploy_path', '~/project');
@@ -15,9 +16,9 @@ set('deploy_path', '~/project');
 host('project.com');
 ```
 
-If you have one host for production and another for staging the next example is sufficient.
+如果你有两台主机,如:一个测试一个生产, 下面这些配置就能满足.
 
-> Right behavior for `dep deploy` command is to _deploy staging_, and to deploy prod is `dep deploy production`.
+> 由于设置了 _default_stage_ 参数,所以 `dep deploy` 命令 , 部署的是 _staging_. 真正部署生产环境的命令是 `dep deploy production`.
 
 ```php
 set('application', 'project');
@@ -31,9 +32,9 @@ host('staging.project.com')
     ->stage('staging');
 ```
 
-> **Best practice** is to leave connecting information for hosts in the `~/.ssh/config` file.
-> That way you allow different users to connect in different ways.
+> **最佳实践** 在文件 `~/.ssh/config` 中保存相关连接信息.
+> 这样就允许不同的用户以不同的方式进行连接.
 
-### Separate inventory files
+### 剥离到独立的主机清单文件中
 
 TODO

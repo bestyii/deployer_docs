@@ -1,14 +1,14 @@
-# Installation
+# 安装
 
-There are three ways to install deployer: 
+有三种方式安装 deployer : 
 
-1. download phar archive
-2. source composer installation
-3. distribution composer installation
+1. 下载 phar 归档
+2. composer 源码安装
+3. composer 发布版安装
 
-### Download phar archive
+### 下载 phar 归档
 
-To install Deployer as phar archive, run the following commands:
+以phar归档方式安装 Deployer , 运行以下命令:
 
 ```sh
 curl -LO https://deployer.org/deployer.phar
@@ -16,85 +16,84 @@ mv deployer.phar /usr/local/bin/dep
 chmod +x /usr/local/bin/dep
 ```
 
-If you need another version of Deployer, you can find it on the [download page](https://deployer.org/download).
-Later, to upgrade Deployer, run the command:
+如果你需要Deployer其他版本, 你可以从 [下载](https://deployer.org/download)页面中找到需要的版本.
+最后, 更新Deployer到最新版本, 运行以下命令:
 
 ```sh
 dep self-update
 ```
 
-To upgrade to the next major release, if available, use the `--upgrade (-u)` option:
-
+要升级到下一个主要版本（如果可用），请使用 `--upgrade (-u)` 选项
 ```sh
 dep self-update --upgrade
 ```
 
-### Source composer installation
+### composer 源码安装
 
-To install Deployer source version with Composer, run the command:
+使用 Composer 源码安装 Deployer，请运行以下命令:
 
 ```sh
 composer require deployer/deployer --dev
 ```
 
-You can also install it globally:
+您还可以全局安装它:
 
 ``` sh
 composer global require deployer/deployer
 ```
 
-More info: https://getcomposer.org/doc/03-cli.md#global
+更多关于全局安装到介绍请参考: https://getcomposer.org/doc/03-cli.md#global
 
-Then to use Deployer, run the following command:
+然后使用Deployer, 请运行以下命令:
 
 ```sh
 php vendor/bin/dep
 ```
 
-> If you have installed Deployer using **both** methods, running `dep` command will prefer a composer-installed version. 
+> 如果你同时使用两种方法安装了 Deployer, 当运行 `dep` 命令时，会优先使用composer安装的版本. 
 
-> If you have dependency conflicts you can use "distribution composer installation"
+> 如果存在依赖项冲突，可以使用 "composer 发布版安装"
 
-### Distribution composer installation
+### composer 发布版安装
 
-To install Deployer distribution version with Composer, run the command:
+使用 Composer 发布版安装 Deployer，请运行以下命令:
 
 ```sh
 composer require deployer/dist --dev
 ```
 
-Then to use Deployer, run the following command:
+然后使用Deployer, 请运行以下命令:
 
 ```sh
 php vendor/bin/dep
 ```
 
-### Own builded phar
+### 构建自己的 phar
 
-If you want to build Deployer from the source code, clone the project from GitHub:
+如果要从源代码构建Deployer，请从GitHub克隆项目:
 
 ```sh
 git clone https://github.com/deployphp/deployer.git
 ```
 
-Then run the following command in the project directory:
+然后在项目目录中运行以下命令:
 
 ```sh
 php bin/build
 ```
 
-This will build the `deployer.phar` phar archive.
+将会构建出 `deployer.phar` phar 归档.
 
 
-### Autocomplete
+### 自动完成
 
-Deployer comes with an autocomplete script for bash/zsh/fish, so you don't need to remember all tasks and options.
-To install, run the following command:
-
+Deployer为bash/zsh/fish提供了一个自动完成脚本，因此您不需要记住所有的任务和选项。
+需要安装，请运行以下命令：
 ~~~bash
 dep autocomplete
 ~~~
 
-And follow the instructions. 
+并按照说明操作。
 
-Read [getting started](getting-started.md) next.
+
+接下来请阅读 [新手入门](getting-started.md) .

@@ -1,7 +1,6 @@
-# Tasks
+# 任务 (task)
 
-Define your own tasks, by using the `task` function. Also, you can setup a description for a task with the `desc` function:
-
+使用`task`函数,定义个性化任务. 同时还可以使用`desc`函数设置任务说明:
 ```php
 desc('My task');
 task('my_task', function () {
@@ -9,42 +8,41 @@ task('my_task', function () {
 });
 ```
 
-To run your task:
+执行任务:
 
 ```sh
 dep my_task
 ```
 
-To list all available commands:
+列出全部可用的命令:
 
 ```sh
 dep list
 ```
 
-To run a task only on a specified host or stage:
+仅在指定的主机或环境(stage)上运行任务:
 
 ```sh
 dep deploy main
 ```
 
-You can specify hosts via the `--hosts` option (comma separate multiple values) and roles via the `--roles` option:
+你可以通过`--hosts`选项(多个值时,用英文逗号分隔)指定主机, 以及通过`--roles`选项指定角色:
 
 ```sh
 dep deploy --hosts domain.com
 dep deploy --roles app
 ```
 
-### Simple tasks
+### 简单任务
 
-If your task only contains `run` calls, or just one bash command, you can simplify the task definition:
-
+如果你的任务仅仅包含了`run`函数调用, 或只有一个bash命令, 可以简化任务定义:
 ```php
 task('build', 'npm build');
 ```
 
-> By default all simple tasks cd to `release_path`, so you don't need to.
+> 默认情况下,所有的简单任务会先 cd 到 `release_path`目录下, 所以不重复做此步骤.
 
-Or you can use a multi line script:
+或者可以使用多行脚本:
  
 ```php
 task('build', '
@@ -54,9 +52,9 @@ task('build', '
 ');
 ```
 
-### Task grouping
+### 任务分组
 
-You can combine tasks in groups:
+你可以合并任务到一个分组中:
 
 ```php
 task('deploy', [
@@ -68,9 +66,9 @@ task('deploy', [
 ]);
 ```
 
-### Before and after
+### Before 与 after
 
-You can define tasks to be run before or after some tasks.
+你可以定义任务在某些任务开始前或完成后执行.
 
 ``` php
 task('deploy:done', function () {
@@ -80,15 +78,15 @@ task('deploy:done', function () {
 after('deploy', 'deploy:done');
 ```
 
-After the `deploy` task is called, `deploy:done` will be executed.
+在`deploy`任务调用之后, `deploy:done` 将会被执行.
 
-### Filtering
+### 过滤
 
-You can specify on which hosts/stages/roles you want to run a task.
+您可以指定要在哪些主机(hosts)/环境(stage)/角色(roles)上运行任务。
 
-### By stage
+### 按环境(stage)
 
-Filter hosts by stage:
+按环境(stage)筛选主机:
 
 ``` php
 desc('Run tests for application');
@@ -97,9 +95,9 @@ task('test', function () {
 })->onStage('test');
 ```
 
-### By roles
+### 按角色(roles)
 
-Filter tasks by roles:
+按角色(roles)筛选主机:
 
 ``` php
 desc('Migrate database');
@@ -108,11 +106,11 @@ task('migrate', function () {
 })->onRoles('db');
 ```
 
-Also you can specify multiple roles: `onRoles('app', 'db', ...)`.
+还可以指定多个角色: `onRoles('app', 'db', ...)`.
 
-### By hosts
+### 按主机(hosts)名
 
-Filter tasks by hosts:
+按主机(hosts)名筛选主机:
 
 ``` php
 desc('Migrate database');
@@ -121,11 +119,11 @@ task('migrate', function () {
 })->onHosts('db.domain.com');
 ```
 
-Also you can specify multiple hosts: `onHosts('db.domain.com', ...)`.
+你还可以指定多个主机名:`onHosts('db.domain.com', ...)`.
 
-### Local tasks
+### 本地任务
 
-Mark a task with `local` to run it locally and only once, independent from the hosts count.
+将任务标记为 `local` 以在本地运行，并且只运行一次，与主机计数无关。
 
 ```php
 task('build', function () {
@@ -133,30 +131,29 @@ task('build', function () {
 })->local();
 ```
 
-> Note that calling `run` inside a local task will have the same effect as calling `runLocally`. 
+>注意，在本地任务中调用 `run` 与调用`runLocally`具有相同的效果。 
 
-### Once
+### 仅运行一次
 
-To run a task only once:
+任务只运行一次:
 
 ```php
 task('do', ...)->once();
 ```
 
-Will run on the first host only.
+将仅在第一台主机上运行.
 
-### Reconfigure
+### 重新配置
 
-You can reconfigure tasks, e.g. those provided by 3rd party recipes by retrieving them by name:
+您可以重新配置任务，例如，按名称检索第三方recipes提供的任务：
 
 ```php
 task('notify')->onStage('production');
 ```
 
-### Overriding tasks
+### 任务复写
 
-Some times you may want to have a different behavior of some task from the common recipes. Simply override it:
-
+有时，您可能希望某些任务的行为与常见的方法不同。可以简单到覆盖它:
 ```php
 task('deploy:update_code', function () {
     // Your custom update code
@@ -164,9 +161,9 @@ task('deploy:update_code', function () {
 });
 ```
 
-### Using input options
+### 使用输入选项
 
-You can define additional input options and arguments, before defining tasks:
+在定义任务之前，可以定义其他输入选项和参数:
 
 ``` php
 use Symfony\Component\Console\Input\InputOption;
@@ -176,17 +173,17 @@ argument('stage', InputArgument::OPTIONAL, 'Run tasks only on this host or stage
 option('tag', null, InputOption::VALUE_OPTIONAL, 'Tag to deploy.');
 ```
 
-To get the input inside a task, this can be used:
+在任务内部使用这些:
 
 ``` php
 task('foo:bar', function() {
-    // For arguments
+    // 参数(arguments)
     $stage = null;
     if (input()->hasArgument('stage')) {
         $stage = input()->getArgument('stage');
     }
     
-    // For option
+    // 选项(option)
     $tag = null;
     if (input()->hasOption('tag')) {
         $tag = input()->getOption('tag');
@@ -194,22 +191,22 @@ task('foo:bar', function() {
 });
 ```
 
-### Parallel task execution
+### 任务并行执行
 
-When deploying to multiple hosts, Deployer will run one task on each host:
+当部署到多个主机时，Deployer将在每个主机上运行一个任务:
 
 <svg width="600" height="350" viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g transform="translate(456 309)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="42" y="24">task 2</tspan></text></g><g transform="translate(306 271)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="42" y="24">task 2</tspan></text></g><g transform="translate(156 233)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="42" y="24">task 2</tspan></text></g><g transform="translate(6 195)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="43" y="24">task 2</tspan></text></g><g transform="translate(456 157)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><g transform="translate(306 119)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><g transform="translate(156 81)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><g transform="translate(6 43)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><path d="M3 35h594.5" stroke="#EBEBEB" stroke-linecap="square" stroke-dasharray="3,5"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="497" y="25">Host 4</tspan></text><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="347" y="25">Host 3</tspan></text><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="197" y="25">Host 2</tspan></text><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="47" y="25">Host 1</tspan></text></g></svg>
 
-To speedup deployment add the `--parallel` or `-p` option. This will run tasks in parallel on each host. If execution of the task on a host takes longer then on others, Deployer will wait until all hosts have finished their tasks.
+要加快部署, 请添加 `--parallel` 或 `-p` 选项. 这将在每个主机上并行运行任务. 如果在主机上执行任务所需的时间比其他主机长，Deployer将等待所有主机完成任务.
 
 <svg width="600" height="153" viewBox="0 0 600 153" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g transform="translate(456 91)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="42" y="24">task 2</tspan></text></g><g transform="translate(306 91)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="42" y="24">task 2</tspan></text></g><g transform="translate(156 91)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="42" y="24">task 2</tspan></text></g><g transform="translate(6 91)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="43" y="24">task 2</tspan></text></g><g transform="translate(456 43)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><g transform="translate(306 43)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><g transform="translate(156 43)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><g transform="translate(6 43)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><path d="M3 35h594.5" stroke="#EBEBEB" stroke-linecap="square" stroke-dasharray="3,5"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="497" y="25">Host 4</tspan></text><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="347" y="25">Host 3</tspan></text><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="197" y="25">Host 2</tspan></text><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="47" y="25">Host 1</tspan></text></g></svg>
 
-Limit the number of concurrent tasks by specifing a number. By default, up to 10 tasks will be processed concurrently.
-  
+通过指定一个数字来限制并发任务的数量. 默认情况下, 最多可同时处理10个任务.
+
 ```sh
 dep deploy --parallel --limit 2
 ```
 
 <svg width="600" height="210" viewBox="0 0 600 210" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g transform="translate(456 157)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="42" y="24">task 2</tspan></text></g><g transform="translate(306 157)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="42" y="24">task 2</tspan></text></g><g transform="translate(156 119)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="42" y="24">task 2</tspan></text></g><g transform="translate(6 119)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="43" y="24">task 2</tspan></text></g><g transform="translate(456 81)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><g transform="translate(306 81)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><g transform="translate(156 43)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><g transform="translate(6 43)"><rect fill="#EBEBEB" width="140" height="37.176" rx="8"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="41" y="24">task 1</tspan></text></g><path d="M3 35h594.5" stroke="#EBEBEB" stroke-linecap="square" stroke-dasharray="3,5"/><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="497" y="25">Host 4</tspan></text><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="347" y="25">Host 3</tspan></text><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="197" y="25">Host 2</tspan></text><text font-family="Monaco" font-size="16" fill="#9B9B9B"><tspan x="47" y="25">Host 1</tspan></text></g></svg>
 
-Next: [hosts](hosts.md).
+下一节: [主机](hosts.md).
