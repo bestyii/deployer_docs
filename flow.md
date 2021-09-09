@@ -50,7 +50,7 @@ after('success', 'notify');
 
 ### deploy:release
 
-基于 `release_name` 配置参数创建新的发布文件夹. 还读取 `.dep/releases` 以获取以前创建的版本列表.
+基于 `release_name` 配置参数创建新的发布文件夹. 同时读取 `.dep/releases` 以获取以前创建的版本列表.
 
 此外, 如果在 `deploy_path` 中有早期版本的符号链接, 则会将其删除.
 
