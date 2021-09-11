@@ -1,10 +1,8 @@
+# 文档
 >
 > # v6.x 版本文档
 > ###  v7.x 版本文档被合并到 [deployer 仓库](https://github.com/deployphp/deployer/tree/master/docs)
 >
-
-# 文档
-
 ## 主要概念
 
 * [新手入门](getting-started.md)
