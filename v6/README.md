@@ -1,7 +1,6 @@
-# 文档
+# v6.x 版本文档
 >
-> # v6.x 版本文档
-> ###  v7.x 版本文档被合并到 [deployer 仓库](https://github.com/deployphp/deployer/tree/master/docs)
+>   查看 [v7.x 版本文档](../v7/README.md) 
 >
 ## 主要概念
 
@@ -20,7 +19,7 @@
 * [部署 与 Git](advanced/deploy-and-git.md)
 * [并行输入输出（Parallel IO）](advanced/parallel-io.md)
 
-## 如何做系列
+## 如何做
 
 * [如何使用Deployer部署Laravel项目](how-to-deploy-laravel.md)
 
